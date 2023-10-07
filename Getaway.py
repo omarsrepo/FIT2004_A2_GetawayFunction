@@ -4,23 +4,22 @@ from math import ceil
 def allocate(preferences: list[list], licences: list) -> list[list] | None:
     """
     Function description:
-    This function will be used to compute one of many valid combinations of allocating people into
-    cars for them to go on a trip while maintaining certain constraints.
+        This function will be used to compute one of many valid combinations of allocating people into
+        cars for them to go on a trip while maintaining certain constraints.
 
     Approach description:
-    1. We first calculate the total no.of people, the minimum no.of cars required and the shortlisted no.of destinations.
-    2. We then check if we have enough drivers in the first place to make the trip.
-       We need a minimum of 2 drivers per car which means if we have 3 cars, we need a minimum of 6 drivers and
-       if we have 3 cars and only 5 drivers, we immediately return None saying that the trip is impossible to be made.
-    3. Once we know that we have enough drivers, we will handle them by sorting the drivers into the cars based on their
-       preferences of destinations. This is handled by the sort_driver() function below.
-    4. Finally, one the drivers have been successfully allocated into the correct cars based on their preferences,
-       we handle the remaining people who are not driving.
-       We will find the people who are not driving by identifying their indexes as the indexes that are NOT part of the
-       licenses list. Once we have identified them, we simply allocate them into a car with the least no.of people that
-       is NOT FULL and also going to one of their preferred destinations. This way we will keep increasing the no.of
-       members of each car simultaneously rather than filling one car up first and then moving to the next.
-
+        1. We first calculate the total no.of people, the minimum no.of cars required and the shortlisted no.of destinations.
+        2. We then check if we have enough drivers in the first place to make the trip.
+           We need a minimum of 2 drivers per car which means if we have 3 cars, we need a minimum of 6 drivers and
+           if we have 3 cars and only 5 drivers, we immediately return None saying that the trip is impossible to be made.
+        3. Once we know that we have enough drivers, we will handle them by sorting the drivers into the cars based on their
+           preferences of destinations. This is handled by the sort_driver() function below.
+        4. Finally, one the drivers have been successfully allocated into the correct cars based on their preferences,
+           we handle the remaining people who are not driving.
+           We will find the people who are not driving by identifying their indexes as the indexes that are NOT part of the
+           licenses list. Once we have identified them, we simply allocate them into a car with the least no.of people that
+           is NOT FULL and also going to one of their preferred destinations. This way we will keep increasing the no.of
+           members of each car simultaneously rather than filling one car up first and then moving to the next.
 
     :Input:
         argv1: preferences (list of lists indicating the destinations in which person i is interested.)
@@ -30,8 +29,29 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
         2: cars (list of lists in which, for 0 ≤ j ≤ ⌈n/5⌉ − 1, cars[j] is a list identifying the persons that will be traveling on car j to destination j)
 
     :Time complexity:
+        Best and Worst case of O(N^2)
+        When we look for the remaining people who do not have licenses, we can potentially have a worst case of O(N^2)
+        because the length of the licenses list can be as long as N.
+        The bubble sort section in sort_drivers() function has the best and worst time complexity of O(N^2).
+        Overall, the time complexity is dominated by bubble sorting in sort_drivers() -> Refer to documentation below.
 
     :Aux space complexity:
+        Aux space complexity is O(N) worst case
+        Total Space complexity is O(N) worst case
+
+        1. From sort_drivers() function, we have an Aux space complexity of O(N) worst case.
+        2. Furthermore, we create one additional data structure in this function which is:
+           people_without_licences -> Worst case of O(Y) where Y is the no.of people without licenses
+
+        Aux space complexity = O(N) + O(Y) = O(N+Y) = O(N)
+        Overall, the Auxiliary space complexity is dominated by the sort_drivers() function.
+
+        Furthermore, the TOTAL space complexity is the space of the inputs + Aux space complexity
+        inputs are:
+            preferences = worst case O(N) where N is the no.of people
+            licences = worst case O(N) where N is the no.of people
+        Input + Aux = O(N+N) + O(N+Y) = O(N) + O(N+Y) = O(N) + O(N) = O(N)
+        Total Space complexity = O(N) worst case
     """
 
     n = len(preferences)  # Number of people
@@ -46,7 +66,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
     cars = sort_drivers(preferences, licences)
 
     # Find the remaining people who do not have licenses
-    # Worst time complexity O(N+M) where N = Total people and M = People with licences
+    # Worst time complexity O(N^2) because everyone could potentially have a license (license list can be as long as N)
     people_without_licences = []
     for people in range(n):
         has_licence = False
@@ -101,7 +121,6 @@ def sort_drivers(preferences, licences):
         multiple times and has an overall best and worst time complexity of O(N^2) where N is the no.of drivers
         which can potentially be equal to the total no.of people in the case that everyone has a license.
 
-
     :Aux space complexity:
         Aux space complexity is O(N) worst case
         Total Space complexity is O(N) worst case
@@ -128,7 +147,6 @@ def sort_drivers(preferences, licences):
 
     # Create a list to track assigned drivers
     assigned_drivers = [False] * n
-
     # Create cars with empty passenger lists
     cars = [[] for _ in range(m)]
 
@@ -182,7 +200,7 @@ if __name__ == "__main__":
     # preferences = [[0], [1, 2], [0, 1, 2], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1], [2], [2, 1], [0, 2]]
     # licences = [1, 4, 0, 2, 5, 11]
     preferences = [[0], [1], [0, 1], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1]]
-    licences = [1, 4, 0, 2, 3, 5, 8, 7]
+    licences = [1, 4, 0, 5, 8]
 
     n = len(preferences)  # No.of people
     m = ceil(n / 5)  # Number of available cars/destinations
@@ -192,7 +210,5 @@ if __name__ == "__main__":
     print(f'Number of cars/destinations: {m}')
     print(f'Number of drivers required: {no_of_drivers_required}')
     print(f'Cars: {cars}\n')
-
-
-    print(sort_drivers(preferences, licences))
-    # print(allocate(preferences, licences))
+    
+    print(allocate(preferences, licences))
