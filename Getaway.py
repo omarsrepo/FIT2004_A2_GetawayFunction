@@ -30,7 +30,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
 
     :Time complexity:
         Best and Worst case of O(N^2)
-        When we look for the remaining people who do not have licenses, we can potentially have a worst case of O(N^2)
+        When we look for the remaining people who do not have licenses, we can potentially have the worst case of O(N^2)
         because the length of the licenses list can be as long as N.
         The bubble sort section in sort_drivers() function has the best and worst time complexity of O(N^2).
         Overall, the time complexity is dominated by bubble sorting in sort_drivers() -> Refer to documentation below.
@@ -210,5 +210,5 @@ if __name__ == "__main__":
     print(f'Number of cars/destinations: {m}')
     print(f'Number of drivers required: {no_of_drivers_required}')
     print(f'Cars: {cars}\n')
-    
+
     print(allocate(preferences, licences))
