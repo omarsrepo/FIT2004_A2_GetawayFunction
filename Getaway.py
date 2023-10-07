@@ -76,7 +76,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
                 break
         if not has_licence:
             people_without_licences.append(people)
-    print(f'People without licenses: {people_without_licences} ------- from allocate()\n')
+    # print(f'People without licenses: {people_without_licences} ------- from allocate()\n')
 
     # Place the remaining people who are not driving into one of the cars they can go in
     # Worst time complexity O(M+m) where M = People with licences and m = no.of cars or destinations
@@ -165,8 +165,8 @@ def sort_drivers(preferences, licences):
                 swapped = True
         if not swapped:
             break
-    print(f'Driver preferences: {preference_lengths} ------- from sort_drivers()')
-    print(f'Sorted license: {licences} ------- from sort_drivers()')
+    # print(f'Driver preferences: {preference_lengths} ------- from sort_drivers()')
+    # print(f'Sorted license: {licences} ------- from sort_drivers()')
 
     for driver_id in licences:
 
@@ -190,25 +190,5 @@ def sort_drivers(preferences, licences):
                     least_crowded = i
             cars[least_crowded].append(driver_id)
             assigned_drivers[driver_id] = True
-
+    # print(f'Drivers in cars: {cars} ------- from sort_drivers()')
     return cars
-
-
-if __name__ == "__main__":
-    pass
-    # Example usage:
-    # preferences = [[0], [1, 2], [0, 1, 2], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1], [2], [2, 1], [0, 2]]
-    # licences = [1, 4, 0, 2, 5, 11]
-    preferences = [[0], [1], [0, 1], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1]]
-    licences = [1, 4, 0, 5, 8]
-
-    n = len(preferences)  # No.of people
-    m = ceil(n / 5)  # Number of available cars/destinations
-    no_of_drivers_required = 2 * ceil(n / 5)  # Number of drivers required
-    cars = [[] for _ in range(m)]
-    print(f'Number of people: {n}')
-    print(f'Number of cars/destinations: {m}')
-    print(f'Number of drivers required: {no_of_drivers_required}')
-    print(f'Cars: {cars}\n')
-
-    print(allocate(preferences, licences))
