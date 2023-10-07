@@ -5,7 +5,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
     """
     Function description:
     This function will be used to compute one of many valid combinations of allocating people into
-    cars for them to go on a trip while maintaining certain constraints such as:
+    cars for them to go on a trip while maintaining certain constraints.
 
     Approach description:
     1. We first calculate the total no.of people, the minimum no.of cars required and the shortlisted no.of destinations.
@@ -84,6 +84,44 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
 
 
 def sort_drivers(preferences, licences):
+    """
+    Function description:
+        This function will be used to compute one of many valid combinations of allocating people into
+        cars for them to go on a trip while maintaining certain constraints such as
+
+    :Input:
+        argv1: preferences (list of lists indicating the destinations in which person i is interested.)
+        argv2: licences (list indicating which persons have driver licences)
+    :Output, return or postcondition:
+        1: cars (list of lists in which, for 0 ≤ j ≤ ⌈n/5⌉ − 1, cars[j] is a list identifying the drivers that will be traveling on car j to destination j)
+
+    :Time complexity:
+        Best and Worst case of O(N^2)
+        The time complexity is dominated by the bubble sort section that iterates through the list of drivers
+        multiple times and has an overall best and worst time complexity of O(N^2) where N is the no.of drivers
+        which can potentially be equal to the total no.of people in the case that everyone has a license.
+
+
+    :Aux space complexity:
+        Aux space complexity is O(N) worst case
+        Total Space complexity is O(N) worst case
+
+        We create three new arrays
+        1. assigned_drivers -> Worst case of O(N) space where N is the total number of people
+        2. cars -> Worst case O(m) space where m is derived from N and represents the number of available cars/destinations.
+        3. preference_lengths -> Worst case of O(N) space where N is the total no.of people
+
+        Aux space complexity = O(N+N+m)
+        Overall, the Auxiliary space complexity is dominated by assigned_drivers and preference_lengths which can be
+        O(N) in the worst case and therefore Aux space complexity is O(N)
+
+        Furthermore, the TOTAL space complexity is the space of the inputs + Aux space complexity
+        inputs are:
+            preferences = worst case O(N) where N is the no.of people
+            licences = worst case O(N) where N is the no.of people
+        Input + Aux = O(N+N) + O(N+N+m) = O(N) + O(N+m) = O(N) + O(N) = O(N)
+        Total Space complexity = O(N) worst case
+    """
     driver_preferences = None
     n = len(preferences)  # Number of people
     m = ceil(n / 5)  # Number of available cars/destinations
@@ -94,12 +132,8 @@ def sort_drivers(preferences, licences):
     # Create cars with empty passenger lists
     cars = [[] for _ in range(m)]
 
-    # Sort drivers based on the number of preferences (ascending)
-    # licences.sort(key=lambda driver_idx: len(preferences[driver_idx]))
-    # print(f'Sorted licenses: {licences} ------- from sort_drivers()')
-
     # Sort drivers based on preferences using bubble sort
-    # Worst Time Complexity of O(N^2) where N is the number of people with licenses
+    # Worst Time Complexity of O(N^2) where N is the total no.of people (everyone may have a license)
     preference_lengths = [0] * len(licences)
     for i, driver_id in enumerate(licences):
         preference_lengths[i] = len(preferences[driver_id])
@@ -113,6 +147,7 @@ def sort_drivers(preferences, licences):
                 swapped = True
         if not swapped:
             break
+    print(f'Driver preferences: {preference_lengths} ------- from sort_drivers()')
     print(f'Sorted license: {licences} ------- from sort_drivers()')
 
     for driver_id in licences:
@@ -147,7 +182,7 @@ if __name__ == "__main__":
     # preferences = [[0], [1, 2], [0, 1, 2], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1], [2], [2, 1], [0, 2]]
     # licences = [1, 4, 0, 2, 5, 11]
     preferences = [[0], [1], [0, 1], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1]]
-    licences = [1, 4, 0, 5, 8]
+    licences = [1, 4, 0, 2, 3, 5, 8, 7]
 
     n = len(preferences)  # No.of people
     m = ceil(n / 5)  # Number of available cars/destinations
@@ -157,4 +192,7 @@ if __name__ == "__main__":
     print(f'Number of cars/destinations: {m}')
     print(f'Number of drivers required: {no_of_drivers_required}')
     print(f'Cars: {cars}\n')
-    print(allocate(preferences, licences))
+
+
+    print(sort_drivers(preferences, licences))
+    # print(allocate(preferences, licences))
