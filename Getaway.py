@@ -35,6 +35,13 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
         The bubble sort section in sort_drivers() function has the best and worst time complexity of O(N^2).
         Overall, the time complexity is dominated by bubble sorting in sort_drivers() -> Refer to documentation below.
 
+        Is it possible to improve this time complexity?
+        Of course, by choosing a more optimal sorting algorithm such as Mergesort, QuickSort, Tim Sort, Heap sort etc.,
+        or using a data structure that could provide a better search and sort time complexity. Fortunately, the worst
+        time complexity requirement for this question was O(N^3) and bubble sort, while not being the best algorithm,
+        is a simple enough sorting approach that adequately fits into the worst time complexity requirements for this
+        question.
+
     :Aux space complexity:
         Aux space complexity is O(N) worst case
         Total Space complexity is O(N) worst case
