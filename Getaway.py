@@ -100,7 +100,6 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
                 return None
 
         # If the person has more than one preference, put them in the least crowded car
-        # [0, 1, 2, 4]
         else:
             least_crowded = people_preferences[0]
             for i in people_preferences[1:]:
