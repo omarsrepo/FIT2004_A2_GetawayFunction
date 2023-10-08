@@ -90,6 +90,8 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
                 if (len(cars[j]) < 5) and (j in people_preferences):
                     cars[j].append(people)
                     break
+                else:
+                    return None # The person cannot fit into the car, hence we cannot make the trip
         else:  # If the person has more than one preference, put them in the least crowded car
             least_crowded = people_preferences[0]
             for i in people_preferences[1:]:
@@ -192,3 +194,51 @@ def sort_drivers(preferences, licences):
             assigned_drivers[driver_id] = True
     # print(f'Drivers in cars: {cars} ------- from sort_drivers()')
     return cars
+
+
+if __name__ == "__main__":
+    import random
+
+    def generate_random_preferences(n, m):
+        preferences = []
+        for _ in range(n):
+            num_preferences = random.randint(1, m)  # Random number of preferences between 1 and m
+            unique_preferences = random.sample(range(m), num_preferences)  # Sample unique values from 0 to m-1
+            preferences.append(unique_preferences)
+        return preferences
+
+    def generate_random_licenses(n):
+        # Generate a list of unique driver IDs ranging from 0 to no_of_people - 1
+        driver_ids = list(range(n))
+        random.shuffle(driver_ids)  # Shuffle the list to make it random
+        num_licenses = random.randint(1, n)  # Random number of licenses between 1 and no_of_people
+        licenses = driver_ids[:num_licenses]  # Select the first num_licenses IDs
+        return licenses
+
+    def generate_minimum_licenses(n):
+        # Generate a list of unique driver IDs ranging from 0 to no_of_people - 1
+        driver_ids = list(range(n))
+        random.shuffle(driver_ids)  # Shuffle the list to make it random
+        num_licenses = 2 * ceil(no_of_people / 5) # Random number of licenses
+        licenses = driver_ids[:num_licenses]  # Select the first num_licenses IDs
+        return licenses
+
+
+    no_of_people = random.randint(10, 10)
+    m = ceil(no_of_people / 5)  # Number of available cars/destinations
+    no_of_drivers_required = 2 * ceil(no_of_people / 5)  # Number of drivers required
+    cars = [[] for _ in range(m)]
+
+    # preferences = generate_random_preferences(no_of_people, m)
+    # licences = generate_minimum_licenses(no_of_people)
+
+    preferences = [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0]]
+    licences = [1, 8, 4, 5]
+    print(f'preferences = {preferences}')
+    print(f'licences = {licences}')
+    print(f'Number of people: {no_of_people}')
+    print(f'Number of cars/destinations: {m}')
+    print(f'Number of drivers required: {no_of_drivers_required}')
+    print(f'Cars: {cars}\n')
+    print('Output:')
+    print(allocate(preferences, licences))
