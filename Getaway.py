@@ -1,7 +1,7 @@
 from math import ceil
 
 
-def allocate(preferences: list[list], licences: list) -> list[list] | None:
+def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
     """
     Function description:
         This function will be used to compute one of many valid combinations of allocating people into
@@ -55,11 +55,12 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
     """
 
     n = len(preferences)  # Number of people
-    m = ceil(n / 5)  # Number of available cars/destinations
-    no_of_drivers_required = 2 * m  # Number of drivers required
+    no_of_cars_or_destinations = ceil(n / 5)  # Number of available cars/destinations
+    no_of_drivers_required = 2 * no_of_cars_or_destinations  # Number of drivers required
 
     # Base case to check if there are enough drivers
     if len(licences) < no_of_drivers_required:
+        print('Not enough drivers')
         return None
 
     # We begin by sorting the drivers into the correct cars using sort_drivers() function
@@ -76,7 +77,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
                 break
         if not has_licence:
             people_without_licences.append(people)
-    # print(f'People without licenses: {people_without_licences} ------- from allocate()\n')
+    print(f'People without licenses: {people_without_licences} ------- from allocate()\n')
 
     # Place the remaining people who are not driving into one of the cars they can go in
     # Worst time complexity O(M+m) where M = People with licences and m = no.of cars or destinations
@@ -85,14 +86,22 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
         if not people_preferences:  # Return None if a person has no preferences at all (Handling edge case)
             return None
 
-        if len(people_preferences) < 2:  # If the person only has one preference, put them in that car
-            for j in range(m):
-                if (len(cars[j]) < 5) and (j in people_preferences):
-                    cars[j].append(people)
-                    break
-                else:
-                    return None # The person cannot fit into the car, hence we cannot make the trip
-        else:  # If the person has more than one preference, put them in the least crowded car
+        print(f'Cars list so far: {cars}')
+        print(f'we are currently trying to allocate person {people} and their preferences are {people_preferences}\n')
+
+        # If the person only has one preference, put them in that car
+        # Return None if the car is full
+        if len(people_preferences) < 2:
+            preference = people_preferences[0]
+            if len(cars[preference]) < 5:
+                cars[preference].append(people)
+            else:
+                print(f'\nCar {preference} is full and person {people} cannot fit in the car')
+                return None
+
+        # If the person has more than one preference, put them in the least crowded car
+        # [0, 1, 2, 4]
+        else:
             least_crowded = people_preferences[0]
             for i in people_preferences[1:]:
                 if len(cars[i]) < len(cars[least_crowded]):
@@ -101,7 +110,7 @@ def allocate(preferences: list[list], licences: list) -> list[list] | None:
                 cars[least_crowded].append(people)
             else:
                 return None
-
+    print(f'Cars list so far: {cars}\n')
     return cars
 
 
@@ -152,12 +161,12 @@ def sort_drivers(preferences, licences):
     # Create cars with empty passenger lists
     cars = [[] for _ in range(m)]
 
-    # Sort drivers based on preferences using bubble sort
-    # Worst Time Complexity of O(N^2) where N is the total no.of people (everyone may have a license)
     preference_lengths = [0] * len(licences)
     for i, driver_id in enumerate(licences):
         preference_lengths[i] = len(preferences[driver_id])
 
+    # Sort drivers based on preferences using bubble sort
+    # Worst Time Complexity of O(N^2) where N is the total no.of people (everyone may have a license)
     for i in range(len(licences) - 1):
         swapped = False
         for j in range(len(licences) - i - 1):
@@ -192,7 +201,7 @@ def sort_drivers(preferences, licences):
                     least_crowded = i
             cars[least_crowded].append(driver_id)
             assigned_drivers[driver_id] = True
-    # print(f'Drivers in cars: {cars} ------- from sort_drivers()')
+    print(f'Drivers in cars: {cars} ------- from sort_drivers()')
     return cars
 
 
@@ -219,26 +228,26 @@ if __name__ == "__main__":
         # Generate a list of unique driver IDs ranging from 0 to no_of_people - 1
         driver_ids = list(range(n))
         random.shuffle(driver_ids)  # Shuffle the list to make it random
-        num_licenses = 2 * ceil(no_of_people / 5) # Random number of licenses
+        num_licenses = 2 * ceil(n / 5)  # Random number of licenses
         licenses = driver_ids[:num_licenses]  # Select the first num_licenses IDs
         return licenses
 
 
-    no_of_people = random.randint(10, 10)
+    no_of_people = random.randint(1, 20)
     m = ceil(no_of_people / 5)  # Number of available cars/destinations
     no_of_drivers_required = 2 * ceil(no_of_people / 5)  # Number of drivers required
     cars = [[] for _ in range(m)]
 
-    # preferences = generate_random_preferences(no_of_people, m)
-    # licences = generate_minimum_licenses(no_of_people)
+    preferences = generate_random_preferences(no_of_people, m)
+    licences = generate_minimum_licenses(no_of_people)
 
-    preferences = [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0]]
-    licences = [1, 8, 4, 5]
+    # preferences = [[2, 0, 1], [1, 2], [2, 1, 0], [0], [1], [2], [0, 2, 1], [1], [1, 2], [2, 1, 0], [1, 2, 0], [1, 0, 2], [0, 2]]
+    # licences = [1, 5, 3, 9, 6, 10]
     print(f'preferences = {preferences}')
     print(f'licences = {licences}')
-    print(f'Number of people: {no_of_people}')
-    print(f'Number of cars/destinations: {m}')
-    print(f'Number of drivers required: {no_of_drivers_required}')
+    print(f'Number of people: {len(preferences)}')
+    print(f'Number of cars/destinations: {ceil( len(preferences) / 5 )}')
+    print(f'Number of drivers required: {2 * ceil( len(preferences) / 5)}')
     print(f'Cars: {cars}\n')
     print('Output:')
     print(allocate(preferences, licences))
