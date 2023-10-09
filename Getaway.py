@@ -72,6 +72,8 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
 
     # We begin by sorting the drivers into the correct cars using sort_drivers() function
     cars = sort_drivers(preferences, licences)
+    if not cars:
+        return None
 
     # Find the remaining people who do not have licenses
     # Worst time complexity O(N^2) because everyone could potentially have a license (license list can be as long as N)
@@ -193,21 +195,32 @@ def sort_drivers(preferences, licences):
             if not driver_preferences:  # Accounting for a person having no preferences at all
                 return None
 
-        if len(driver_preferences) < 2:  # If the driver only has one preference, put them in that car
-            for j in range(m):
-                if len(cars[j]) < 5:
-                    if j in driver_preferences:
-                        cars[j].append(driver_id)
-                        assigned_drivers[driver_id] = True
-                        break
-        else:  # If the driver has more than one preference, find a car for the driver
+        # If the driver only has one preference, put them in that car
+        # Return None if the car is full
+        if len(driver_preferences) < 2:
+            preference = driver_preferences[0]
+            if len(cars[preference]) < 5:
+                cars[preference].append(driver_id)
+                assigned_drivers[driver_id] = True
+            else:
+                return None
+
+        # If the driver has more than one preference, find a car for the driver
+        else:
             least_crowded = driver_preferences[0]
             for i in driver_preferences[1:]:
                 if len(cars[i]) < len(cars[least_crowded]):
                     least_crowded = i
             cars[least_crowded].append(driver_id)
             assigned_drivers[driver_id] = True
+
     print(f'Drivers in cars: {cars} ------- from sort_drivers()')
+    # Iterate through the cars and check if each car has at least 2 drivers
+    # Return None if a car has less than 2 drivers
+    for car in cars:
+        if len(car) < 2:
+            print('Some car has less than 2 drivers')
+            return None
     return cars
 
 
@@ -239,7 +252,7 @@ if __name__ == "__main__":
         return licenses
 
 
-    no_of_people = random.randint(1, 20)
+    no_of_people = random.randint(10, 10)
     m = ceil(no_of_people / 5)  # Number of available cars/destinations
     no_of_drivers_required = 2 * ceil(no_of_people / 5)  # Number of drivers required
     cars = [[] for _ in range(m)]
@@ -247,8 +260,8 @@ if __name__ == "__main__":
     preferences = generate_random_preferences(no_of_people, m)
     licences = generate_minimum_licenses(no_of_people)
 
-    # preferences = [[2, 0, 1], [1, 2], [2, 1, 0], [0], [1], [2], [0, 2, 1], [1], [1, 2], [2, 1, 0], [1, 2, 0], [1, 0, 2], [0, 2]]
-    # licences = [1, 5, 3, 9, 6, 10]
+    # preferences = [[0], [0, 1], [1, 0], [1], [1], [0], [1], [1, 0], [1], [1, 0]]
+    # licences = [7, 4, 5, 3]
     print(f'preferences = {preferences}')
     print(f'licences = {licences}')
     print(f'Number of people: {len(preferences)}')
