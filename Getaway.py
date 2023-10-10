@@ -89,11 +89,15 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
     print(f'People without licenses: {people_without_licences} ------- from allocate()\n')
 
     # Place the remaining people who are not driving into one of the cars they can go in
-    # Worst time complexity O(M+m) where M = People with licences and m = no.of cars or destinations
     for people in people_without_licences:
         people_preferences = preferences[people]
         if not people_preferences:  # Return None if a person has no preferences at all (Handling edge case)
             return None
+        else:
+            for dest in people_preferences:
+                if dest < 0:
+                    print(f'Person {people} has an invalid destination')
+                    return None
 
         print(f'Cars list so far: {cars}')
         print(f'we are currently trying to allocate person {people} and their preferences are {people_preferences}\n')
@@ -252,16 +256,16 @@ if __name__ == "__main__":
         return licenses
 
 
-    no_of_people = random.randint(10, 10)
+    no_of_people = random.randint(1, 25)
     m = ceil(no_of_people / 5)  # Number of available cars/destinations
     no_of_drivers_required = 2 * ceil(no_of_people / 5)  # Number of drivers required
     cars = [[] for _ in range(m)]
 
-    preferences = generate_random_preferences(no_of_people, m)
-    licences = generate_minimum_licenses(no_of_people)
+    # preferences = generate_random_preferences(no_of_people, m)
+    # licences = generate_random_licenses(no_of_people)
 
-    # preferences = [[0], [0, 1], [1, 0], [1], [1], [0], [1], [1, 0], [1], [1, 0]]
-    # licences = [7, 4, 5, 3]
+    preferences = [[0, 1], [0, 1], [1], [1, 0], [1], [1], [1, 0], [0], [0, 1]]
+    licences = [5, 6, 3, 1, 7]
     print(f'preferences = {preferences}')
     print(f'licences = {licences}')
     print(f'Number of people: {len(preferences)}')
