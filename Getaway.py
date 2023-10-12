@@ -103,14 +103,37 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
         print(f'we are currently trying to allocate person {people} and their preferences are {people_preferences}\n')
 
         # If the person only has one preference, put them in that car
-        # Return None if the car is full
+        # If the car is full, then look for someone in that car to swap with them. Return None if no swaps can be made
         if len(people_preferences) < 2:
             preference = people_preferences[0]
             if len(cars[preference]) < 5:
                 cars[preference].append(people)
             else:
-                print(f'\nCar {preference} is full and person {people} cannot fit in the car')
-                return None
+                for person_to_swap in cars[preference]:  # This loops for a maximum of 5 times
+                    swap = False
+                    persons_preference = preferences[person_to_swap]
+                    if len(persons_preference) < 2:
+                        continue
+                    else:  # If the person we want to move has more than one preference, re-allocate them
+                        for car in persons_preference:  # This loop will run a maximum of ceil(N/5) times
+                            if car != preference:
+                                if len(cars[car]) < 5:
+                                    cars[car].append(person_to_swap)
+                                    cars[preference].remove(person_to_swap)
+                                    cars[preference].append(people)
+                                    swap = True
+                                    break
+                    if swap:
+                        break
+                    else:
+                        continue
+
+                # If the car is full, and we couldn't make a swap, return None
+                if not swap:
+                    return None
+
+                # print(f'\nCar {preference} is full and person {people} cannot fit in the car')
+                # return None
 
         # If the person has more than one preference, put them in the least crowded car
         else:
@@ -121,7 +144,30 @@ def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
             if len(cars[least_crowded]) < 5:
                 cars[least_crowded].append(people)
             else:
-                return None
+                for preference in people_preferences:
+                    for person_to_swap in cars[preference]:  # This loops for a maximum of 5 times -> O(1)
+                        swap = False
+                        persons_preference = preferences[person_to_swap]
+                        if len(persons_preference) < 2:
+                            continue
+                        else:  # If the person we want to move has more than one preference, re-allocate them
+                            for car in persons_preference:  # This loop will run a maximum of ceil(N/5) times
+                                if car != preference:
+                                    if len(cars[car]) < 5:
+                                        cars[car].append(person_to_swap)
+                                        cars[preference].remove(person_to_swap)
+                                        cars[preference].append(people)
+                                        swap = True
+                                        break
+                            if swap:
+                                break
+                            else:
+                                continue
+                if swap:
+                    break
+                else:
+                    return None
+
     print(f'Cars list so far: {cars}\n')
     return cars
 
@@ -264,8 +310,9 @@ if __name__ == "__main__":
     # preferences = generate_random_preferences(no_of_people, m)
     # licences = generate_random_licenses(no_of_people)
 
-    preferences = [[0, 1], [0, 1], [1], [1, 0], [1], [1], [1, 0], [0], [0, 1]]
-    licences = [5, 6, 3, 1, 7]
+    preferences = [[2, 3, 1], [3, 0], [3, 2], [1, 0, 3, 2], [1, 3], [0, 2], [0, 1, 2], [2, 0, 1], [3, 0, 2], [2, 3],
+                   [3, 2], [3], [3, 1, 2], [1], [2, 0, 3], [2], [1], [1, 3], [2], [3, 1]]
+    licences = [14, 19, 8, 16, 13, 10, 17, 5, 11, 7, 2, 3, 0]
     print(f'preferences = {preferences}')
     print(f'licences = {licences}')
     print(f'Number of people: {len(preferences)}')
