@@ -307,12 +307,12 @@ if __name__ == "__main__":
     no_of_drivers_required = 2 * ceil(no_of_people / 5)  # Number of drivers required
     cars = [[] for _ in range(m)]
 
-    # preferences = generate_random_preferences(no_of_people, m)
-    # licences = generate_random_licenses(no_of_people)
+    preferences = generate_random_preferences(no_of_people, m)
+    licences = generate_random_licenses(no_of_people)
 
-    preferences = [[2, 3, 1], [3, 0], [3, 2], [1, 0, 3, 2], [1, 3], [0, 2], [0, 1, 2], [2, 0, 1], [3, 0, 2], [2, 3],
-                   [3, 2], [3], [3, 1, 2], [1], [2, 0, 3], [2], [1], [1, 3], [2], [3, 1]]
-    licences = [14, 19, 8, 16, 13, 10, 17, 5, 11, 7, 2, 3, 0]
+    # preferences = [[2, 3, 1], [3, 0], [3, 2], [1, 0, 3, 2], [1, 3], [0, 2], [0, 1, 2], [2, 0, 1], [3, 0, 2], [2, 3],
+    #                [3, 2], [3], [3, 1, 2], [1], [2, 0, 3], [2], [1], [1, 3], [2], [3, 1]]
+    # licences = [14, 19, 8, 16, 13, 10, 17, 5, 11, 7, 2, 3, 0]
     print(f'preferences = {preferences}')
     print(f'licences = {licences}')
     print(f'Number of people: {len(preferences)}')

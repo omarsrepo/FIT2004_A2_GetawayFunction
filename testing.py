@@ -8,9 +8,14 @@
 
 import unittest
 from Getaway import allocate
+from TRIE import Trie
+from assignment2 import load_dictionary
 
 
 # 1: Customized Auto-Complete
+Dictionary = load_dictionary('Dictionary.txt')
+myTrie = Trie(Dictionary)
+
 
 class TestingQ1(unittest.TestCase):
 
@@ -52,7 +57,7 @@ class TestingQ1(unittest.TestCase):
         # testing
         self.assertEqual(word, 'anaclastic')
         self.assertEqual(definition,
-                         'definition: Produced by the refraction of light, as seen through water; as, anaclastic curves.')
+                         'Produced by the refraction of light, as seen through water; as, anaclastic curves.')
         self.assertEqual(frequency, 24)
 
     def test_05(self):
