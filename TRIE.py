@@ -1,5 +1,3 @@
-import time
-
 from assignment2 import load_dictionary
 
 
