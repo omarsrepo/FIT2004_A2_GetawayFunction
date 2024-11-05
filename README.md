@@ -1,4 +1,4 @@
-# A Weekend Getaway
+# A Weekend Getaway (Flow Network Problem)
 
 With the end of the semester rapidly approaching, you and most of your friends realised that a weekend getaway after Week 12 would be a great idea so that you relax a bit before starting studying for your final exams. The ones that were not initially sure if taking 2 days off would be best idea eventually decided to go with the flow and also plan a weekend getaway.
 
