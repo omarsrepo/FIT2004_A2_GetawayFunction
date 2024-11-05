@@ -1,5 +1,6 @@
 from math import ceil
 
+
 # DO NOT CHANGE THIS FUNCTION
 def load_dictionary(filename):
     infile = open(filename)
@@ -40,8 +41,22 @@ class Node:
         self.definition = None
         self.frequency = None
 
+        self.edges = []
+
     def __repr__(self):
-        return f"Node({self.label})"
+        return f"Vertex({self.label})"
+
+
+class Edge:
+
+    def __init__(self, u, v, w):
+        self.u = u
+        self.v = v
+        self.flow = 0
+        self.capacity = w
+
+    def __repr__(self):
+        return f"Edge(u = {self.u}, v = {self.v}, flow = {self.flow}, capacity = {self.capacity})"
 
 
 class Trie:
@@ -147,7 +162,7 @@ class Trie:
                 return [None, None, 0]
 
         # Initialize result
-        result = [None, None, 0, 0]  # [word, definition, frequency, count]
+        result = [None, None, 0, 0]  # [word, definition, frequency, total count]
 
         # Perform DFS traversal
         self.dfs_traversal(current, prefix, result)  # O(N) time, where N is the total no.of nodes in the TRIE
@@ -179,7 +194,7 @@ class Trie:
         :Aux space complexity: O(1) since no new structures are being created.
         """
         if node.terminal:
-            result[3] += 1
+            result[3] += 1  # Update the total count everytime we find a word
             if node.frequency > result[2]:
                 result[0] = prefix
                 result[1] = node.definition
@@ -192,7 +207,77 @@ class Trie:
 
 # Question 2
 
-def allocate(preferences: list[list], licences: list) -> list[list[int]] | None:
+def allocate(preferences: list[list], licences: list):
+    """
+    Function description:
+        This function will be used to compute one of many valid combinations of allocating people into
+        cars for them to go on a trip while maintaining certain constraints.
+
+    Approach description:
+        1. We first calculate the total no.of people, the minimum no.of cars required and the shortlisted no.of destinations.
+        2. We then check if we have enough drivers in the first place to make the trip.
+           We need a minimum of 2 drivers per car which means if we have 3 cars, we need a minimum of 6 drivers and
+           if we have 3 cars and only 5 drivers, we immediately return None saying that the trip is impossible to be made.
+        3. Once we know that we have enough drivers, we will handle them by sorting the drivers into the cars based on their
+           preferences of destinations. This is handled by the sort_driver() function below.
+        4. Finally, one the drivers have been successfully allocated into the correct cars based on their preferences,
+           we handle the remaining people who are not driving.
+           We will find the people who are not driving by identifying their indexes as the indexes that are NOT part of the
+           licenses list. Once we have identified them, we simply allocate them into a car with the least no.of people that
+           is NOT FULL and also going to one of their preferred destinations. This way we will keep increasing the no.of
+           members of each car simultaneously rather than filling one car up first and then moving to the next.
+
+    :Input:
+        argv1: preferences (list of lists indicating the destinations in which person i is interested.)
+        argv2: licences (list indicating which persons have driver licences)
+    :Output, return or postcondition:
+        1: None ( if it is impossible to allocate the persons into the cars/destinations while satisfying all constraints.)
+        2: cars (list of lists in which, for 0 ≤ j ≤ ⌈n/5⌉ − 1, cars[j] is a list identifying the persons that will be traveling on car j to destination j)
+
+    :Time complexity:
+        Best and Worst case of O(N^2)
+        When we look for the remaining people who do not have licenses, we can potentially have the worst case of O(N^2)
+        because the length of the licenses list can be as long as N.
+        The bubble sort section in sort_drivers() function has the best and worst time complexity of O(N^2).
+        Overall, the time complexity is dominated by bubble sorting in sort_drivers() -> Refer to documentation below.
+
+        Is it
+        """
+
+    # We need to create the set of vertices for locations first
+    # We also need to create a list of edges
+    n = len(preferences)  # Number of people
+    no_of_cars_or_destinations = ceil(n / 5)  # Number of available cars/destinations
+    no_of_drivers_required = 2 * no_of_cars_or_destinations  # Number of drivers required
+
+    # --------------------------------------------------------------------------- Creating the flow network ---------------------------------------------------------------------------
+    source = Node('source')
+    sink = Node('sink')
+    set1 = []  # People set
+    set2 = []  # Destination set
+
+    for i in range(n):
+        set1.append(Node(i + 1))
+    for i in range(no_of_cars_or_destinations):
+        node = Node(f'Destination{i}')
+        set2.append(node)
+
+    # Connect all the edges of the bipartite graph and connect people to destinations -> O(ND) where N = no.of people and D = no.of preferences per person and D << N
+    for i in range(len(set1)):
+        person = set1[i]
+        source.edges.append(Edge(source, person, ceil(n / 5)))
+        for persons_preference in preferences[i]:
+            person.edges.append(Edge(person, set2[persons_preference], 1))
+
+    for destination in set2:
+        destination.edges.append(Edge(destination, sink, 5))
+
+    # --------------------------------------------------------------------------- Creating the flow network ---------------------------------------------------------------------------
+
+    return source, set1, set2
+
+
+def allocate2(preferences: list[list], licences: list) -> list[list[int]] | None:
     """
     Function description:
         This function will be used to compute one of many valid combinations of allocating people into
@@ -452,6 +537,26 @@ def sort_drivers(preferences, licences):
 
 
 if __name__ == "__main__":
-    Dictionary = load_dictionary("Dictionary.txt")
-    my_trie = Trie(Dictionary)
-    print(my_trie.prefix_search(''))
+    # Dictionary = load_dictionary("Dictionary.txt")
+    # my_trie = Trie(Dictionary)
+    # print(my_trie.prefix_search(''))
+    preferences = [[0], [1], [0, 1], [0, 1], [1, 0], [1], [1, 0], [0, 1], [1]]
+    licences = [1, 4, 0, 5, 8]
+    source, people, destination = allocate(preferences, licences)
+    # print(f'Source = {source}')
+    # print(f'People = {people}')
+    # print(f'Destinations = {destination}')
+    # print()
+    #
+    # for item in source.edges:
+    #     print(item)
+    # print()
+    # for item in people:
+    #     print(item.edges)
+    # print()
+    # for item in destination:
+    #     print(item.edges)
+    # for i, item in enumerate(licences):
+    #     print(i)
+
+    print(allocate2(preferences, licences))
